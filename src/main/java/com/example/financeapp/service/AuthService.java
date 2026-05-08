@@ -52,6 +52,7 @@ public class AuthService {
 
     public  String sendOtp(String email)
     {
+        otpRepository.deleteByEmail(email);
         String code = generateCode();
 
         Otp otp = new Otp();
@@ -67,6 +68,7 @@ public class AuthService {
 
     public boolean verifyOtp(String email, String code) {
 
+
         Optional<Otp> otp = otpRepository.findByEmail(email);
 
         if (otp.isEmpty()) return false;
@@ -74,10 +76,8 @@ public class AuthService {
         if (otp.get().getExpireTime().isBefore(LocalDateTime.now()))
             return false;
 
-        System.out.println("DB CODE: " + otp.get().getCode());
-        System.out.println("INPUT CODE: " + code);
 
-        return true;
+        return otp.get().getCode().trim().equals(code.trim());
     }
 
     // LOGIN
