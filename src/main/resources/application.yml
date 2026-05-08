@@ -1,0 +1,12 @@
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: finance.mobil.app@gmail.com
+    password: dyib wnld rcmq uxyx
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
