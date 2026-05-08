@@ -16,6 +16,16 @@ public class AuthService {
 
     private final UserRepository userRepository;
 
+    @Autowired
+    private OtpRepository otpRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private  JwtService jwtService;
+
+
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -44,12 +54,6 @@ public class AuthService {
         return String.valueOf((int)(Math.random() * 900000) + 100000);
     }
 
-    @Autowired
-    private OtpRepository otpRepository;
-
-    @Autowired
-    private EmailService emailService;
-
     public  String sendOtp(String email)
     {
         otpRepository.deleteByEmail(email);
@@ -76,8 +80,15 @@ public class AuthService {
         if (otp.get().getExpireTime().isBefore(LocalDateTime.now()))
             return false;
 
+        boolean valid = otp.get().getCode().trim().equals(code.trim());
 
-        return otp.get().getCode().trim().equals(code.trim());
+        if (valid)
+        {
+            otpRepository.deleteByEmail(email);
+        }
+
+
+        return valid;
     }
 
     // LOGIN
@@ -95,6 +106,8 @@ public class AuthService {
             return new LoginResponse(null, false);
         }
 
-        return new LoginResponse("fake-jwt-token", true);
+        String token = jwtService.generateToken(user.getEmail());
+
+        return new LoginResponse(token, true);
     }
 }
