@@ -5,7 +5,8 @@ import com.example.financeapp.entity.Otp;
 import com.example.financeapp.entity.User;
 import com.example.financeapp.repository.OtpRepository;
 import com.example.financeapp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,19 +16,25 @@ import java.util.Optional;
 public class AuthService {
 
     private final UserRepository userRepository;
-
-    @Autowired
-    private OtpRepository otpRepository;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private  JwtService jwtService;
+    private final OtpRepository otpRepository;
+    private final EmailService emailService;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(
+            UserRepository userRepository,
+            OtpRepository otpRepository,
+            EmailService emailService,
+            JwtService jwtService,
+            PasswordEncoder passwordEncoder
+            )
+    {
         this.userRepository = userRepository;
+        this.otpRepository = otpRepository;
+        this.emailService = emailService;
+        this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // REGISTER
@@ -41,7 +48,7 @@ public class AuthService {
 
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userRepository.save(user);
 
@@ -70,25 +77,28 @@ public class AuthService {
         return "Kod Gönderildi";
     }
 
-    public boolean verifyOtp(String email, String code) {
+    // VERIFY OTP
+    @Transactional
+    public VerifyOtpResponse verifyOtp(VerifyOtpRequest request)
+    {
+        Optional<Otp> otp = otpRepository.findByEmail(request.getEmail());
 
-
-        Optional<Otp> otp = otpRepository.findByEmail(email);
-
-        if (otp.isEmpty()) return false;
+        if (otp.isEmpty()) return new VerifyOtpResponse(false,"Kullanıcı Bulunamadı");
 
         if (otp.get().getExpireTime().isBefore(LocalDateTime.now()))
-            return false;
+            return new VerifyOtpResponse(false,"Kodun Süresi Geçmiş");
 
-        boolean valid = otp.get().getCode().trim().equals(code.trim());
+        boolean valid = otp.get().getCode().trim().equals(request.getCode().trim());
 
+        System.out.println("SERVICE GİRDİ");
+        System.out.println("OTP valid mi? " + valid);
         if (valid)
         {
-            otpRepository.deleteByEmail(email);
+            otpRepository.deleteByEmail(request.getEmail());
+            return new VerifyOtpResponse(true,"Kod Doğrulandı");
         }
 
-
-        return valid;
+        return new VerifyOtpResponse(false,"Kod Yanlış");
     }
 
     // LOGIN
@@ -102,7 +112,8 @@ public class AuthService {
 
         User user = userOpt.get();
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(),user.getPassword()))
+        {
             return new LoginResponse(null, false);
         }
 
@@ -110,4 +121,24 @@ public class AuthService {
 
         return new LoginResponse(token, true);
     }
+
+    // RESET PASSWORD
+    public ResetPasswordResponse resetPassword(ResetPasswordRequest request)
+    {
+        Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
+
+        if (userOpt.isEmpty())
+        {
+            return new ResetPasswordResponse(false,"Kullanıcı Bulunamadı");
+        }
+
+        User user = userOpt.get();
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        userRepository.save(user);
+
+        return new ResetPasswordResponse(true,"Şifre Güncellendi");
+    }
+
 }
