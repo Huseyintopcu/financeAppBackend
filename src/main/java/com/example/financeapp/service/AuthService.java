@@ -90,8 +90,7 @@ public class AuthService {
 
         boolean valid = otp.get().getCode().trim().equals(request.getCode().trim());
 
-        System.out.println("SERVICE GİRDİ");
-        System.out.println("OTP valid mi? " + valid);
+
         if (valid)
         {
             otpRepository.deleteByEmail(request.getEmail());
