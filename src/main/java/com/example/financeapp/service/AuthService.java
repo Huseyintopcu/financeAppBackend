@@ -63,7 +63,6 @@ public class AuthService {
 
     public  String sendOtp(String email)
     {
-        otpRepository.deleteByEmail(email);
         String code = generateCode();
 
         Otp otp = new Otp();

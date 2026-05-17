@@ -41,7 +41,6 @@ public class AuthController {
     @PostMapping("/verify-otp")
     public VerifyOtpResponse verifyOtp(@RequestBody VerifyOtpRequest request)
     {
-        System.out.println("CONTROLLER GİRDİ");
         return authService.verifyOtp(request);
     }
 
