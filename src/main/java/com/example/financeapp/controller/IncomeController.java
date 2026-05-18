@@ -4,10 +4,7 @@ import com.example.financeapp.dto.IncomeRequest;
 import com.example.financeapp.dto.IncomeResponse;
 import com.example.financeapp.repository.IncomeRepository;
 import com.example.financeapp.service.IncomeService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.Console;
 
@@ -26,5 +23,11 @@ public class IncomeController
     public IncomeResponse addIncome(@RequestBody IncomeRequest request)
     {
         return incomeService.addIncome(request);
+    }
+
+    @GetMapping("/monthly-total")
+    public double getMontlyTotal()
+    {
+        return incomeService.getCurrentMonthIncome();
     }
 }

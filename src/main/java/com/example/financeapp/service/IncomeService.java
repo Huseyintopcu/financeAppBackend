@@ -8,6 +8,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class IncomeService
 {
@@ -32,5 +34,14 @@ public class IncomeService
         incomeRepository.save(income);
 
         return new IncomeResponse(true,"Gelir Eklendi");
+    }
+
+    public double getCurrentMonthIncome()
+    {
+        String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        LocalDate now = LocalDate.now();
+
+        return incomeRepository.getMouthlyIncome(email, now.getMonthValue(), now.getYear());
     }
 }
