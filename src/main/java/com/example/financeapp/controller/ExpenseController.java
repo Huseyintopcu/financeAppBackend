@@ -4,10 +4,7 @@ import com.example.financeapp.dto.ExpenseRequest;
 import com.example.financeapp.dto.ExpenseResponse;
 import com.example.financeapp.repository.ExpenseRepository;
 import com.example.financeapp.service.ExpenseService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/expense")
@@ -21,7 +18,7 @@ public class ExpenseController
     }
 
     @PostMapping("/add")
-    public ExpenseResponse addExpense (ExpenseRequest request)
+    public ExpenseResponse addExpense (@RequestBody ExpenseRequest request)
     {
         return expenseService.addExpense(request);
     }

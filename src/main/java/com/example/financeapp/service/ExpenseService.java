@@ -26,8 +26,11 @@ public class ExpenseService
 
         Expense expense = new Expense();
 
-        expense.setAmount(request.getAmount());
         expense.setTitle(request.getTitle());
+        System.out.println(request.getTitle());
+        expense.setAmount(request.getAmount());
+        expense.setQuantity(request.getQuantity());
+        expense.setCategory(request.getCategory());
         expense.setTransactionDate(LocalDate.now());
         expense.setUserEmail(email);
 

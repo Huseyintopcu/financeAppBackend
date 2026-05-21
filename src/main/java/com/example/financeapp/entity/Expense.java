@@ -1,15 +1,12 @@
 package com.example.financeapp.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jdk.jfr.Enabled;
+import com.example.financeapp.enums.ExpenseCategory;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
 
-@Enabled
+@Entity
 @Table(name= "expenses")
 @Data
 public class Expense
@@ -19,6 +16,11 @@ public class Expense
     private long id;
 
     private String title;
+
+    private int quantity;
+
+    @Enumerated(EnumType.STRING)
+    private ExpenseCategory category;
 
     private double amount;
 
