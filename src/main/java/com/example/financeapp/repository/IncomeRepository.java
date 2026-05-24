@@ -4,6 +4,7 @@ import com.example.financeapp.entity.Income;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IncomeRepository extends JpaRepository<Income, Long>
@@ -18,4 +19,6 @@ public interface IncomeRepository extends JpaRepository<Income, Long>
     AND YEAR(i.transactionDate) = :year
     """)
     double getMouthlyIncome(String email, int month, int year);
+
+    List<Income> findByUserEmailAndTransactionDate(String userEmail, LocalDate transactionDate);
 }

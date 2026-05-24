@@ -5,6 +5,9 @@ import com.example.financeapp.entity.Expense;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
+import java.util.List;
+
 public interface ExpenseRepository extends JpaRepository<Expense, Long>
 {
     @Query("""
@@ -15,4 +18,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long>
     AND YEAR(e.transactionDate) = :year
     """)
     double getMonthlyExpense(String email, int month, int year);
+
+    List<Expense> findByUserEmailAndTransactionDate(String email, LocalDate today);
 }

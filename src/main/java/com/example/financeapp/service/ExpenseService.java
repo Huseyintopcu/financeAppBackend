@@ -27,7 +27,6 @@ public class ExpenseService
         Expense expense = new Expense();
 
         expense.setTitle(request.getTitle());
-        System.out.println(request.getTitle());
         expense.setAmount(request.getAmount());
         expense.setQuantity(request.getQuantity());
         expense.setCategory(request.getCategory());
