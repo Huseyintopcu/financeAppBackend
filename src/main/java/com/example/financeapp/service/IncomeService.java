@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class IncomeService
@@ -43,5 +44,30 @@ public class IncomeService
         LocalDate now = LocalDate.now();
 
         return incomeRepository.getMouthlyIncome(email, now.getMonthValue(), now.getYear());
+    }
+
+    public List<Income> getALlIncome()
+    {
+        String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        LocalDate now = LocalDate.now();
+        LocalDate start = now.withDayOfMonth(1);
+        LocalDate end = now.withDayOfMonth(now.lengthOfMonth());
+
+        return incomeRepository.findByUserEmailAndTransactionDateBetween(email,start,end);
+    }
+
+    public void deleteIncome(long id)
+    {
+        String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        Income income = incomeRepository.findById(id).orElseThrow();
+
+        if (!income.getUserEmail().equals(email))
+        {
+            throw new RuntimeException("Yetkisiz işlem");
+        }
+
+        incomeRepository.delete(income);
     }
 }

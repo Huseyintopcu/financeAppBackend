@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long>
 {
@@ -20,4 +21,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long>
     double getMonthlyExpense(String email, int month, int year);
 
     List<Expense> findByUserEmailAndTransactionDate(String email, LocalDate today);
+
+    List<Expense> findByUserEmailAndTransactionDateBetween(String email,LocalDate start,LocalDate end);
+
+    Optional<Expense> findById(long id);
 }

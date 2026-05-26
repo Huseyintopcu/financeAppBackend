@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ExpenseService
@@ -45,5 +46,30 @@ public class ExpenseService
         LocalDate now = LocalDate.now();
 
         return expenseRepository.getMonthlyExpense(email, now.getMonthValue(), now.getYear());
+    }
+
+    public List<Expense> getAllExpense()
+    {
+        String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        LocalDate now = LocalDate.now();
+        LocalDate start = now.withDayOfMonth(1);
+        LocalDate end = now.withDayOfMonth(now.lengthOfMonth());
+
+        return expenseRepository.findByUserEmailAndTransactionDateBetween(email,start,end);
+    }
+
+    public void deleteExpense(long id)
+    {
+        String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        Expense expense = expenseRepository.findById(id).orElseThrow();
+
+        if (!expense.getUserEmail().equals(email))
+        {
+            throw new RuntimeException("Yetkisiz işlem");
+        }
+
+        expenseRepository.delete(expense);
     }
 }

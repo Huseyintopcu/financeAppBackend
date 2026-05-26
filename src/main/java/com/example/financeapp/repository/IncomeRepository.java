@@ -6,11 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface IncomeRepository extends JpaRepository<Income, Long>
 {
-    List<Income> findByUserEmail(String userEmail);
-
     @Query("""
     SELECT COALESCE(SUM(i.amount), 0)
     FROM Income i
@@ -21,4 +20,10 @@ public interface IncomeRepository extends JpaRepository<Income, Long>
     double getMouthlyIncome(String email, int month, int year);
 
     List<Income> findByUserEmailAndTransactionDate(String userEmail, LocalDate transactionDate);
+
+    List<Income> findByUserEmailAndTransactionDateBetween(String userEmail,LocalDate start, LocalDate end);
+
+
+    @Override
+    Optional<Income> findById(Long id);
 }
