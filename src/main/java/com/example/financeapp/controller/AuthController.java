@@ -3,7 +3,9 @@ package com.example.financeapp.controller;
 import com.example.financeapp.dto.*;
 import com.example.financeapp.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
@@ -48,5 +50,15 @@ public class AuthController {
     public ResetPasswordResponse resetPassword(@RequestBody ResetPasswordRequest request)
     {
         return authService.resetPassword(request);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponse> refresh(@RequestBody RefreshRequest request)
+    {
+        LoginResponse response = authService.refresh(request);
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }

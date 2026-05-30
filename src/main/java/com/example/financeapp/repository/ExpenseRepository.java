@@ -25,4 +25,5 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long>
     List<Expense> findByUserEmailAndTransactionDateBetween(String email,LocalDate start,LocalDate end);
 
     Optional<Expense> findById(long id);
+
 }

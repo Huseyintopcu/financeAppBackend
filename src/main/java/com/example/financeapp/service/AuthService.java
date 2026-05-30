@@ -105,19 +105,38 @@ public class AuthService {
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
 
         if (userOpt.isEmpty()) {
-            return new LoginResponse(null, false);
+            return new LoginResponse(null, null,false);
         }
 
         User user = userOpt.get();
 
         if (!passwordEncoder.matches(request.getPassword(),user.getPassword()))
         {
-            return new LoginResponse(null, false);
+            return new LoginResponse(null, null,false);
         }
 
-        String token = jwtService.generateToken(user.getEmail());
+        String accessToken = jwtService.generateAccessToken(user.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
-        return new LoginResponse(token, true);
+        return new LoginResponse(accessToken, refreshToken,true);
+    }
+
+    public LoginResponse refresh(RefreshRequest request)
+    {
+
+        if (request.getRefreshToken() != null && jwtService.validateRefreshToken(request.getRefreshToken()))
+        {
+
+            String email = jwtService.extractEmail(request.getRefreshToken());
+
+
+            String newAccessToken = jwtService.generateAccessToken(email);
+            String newRefreshToken = jwtService.generateRefreshToken(email);
+
+            return new LoginResponse(newAccessToken, newRefreshToken, true);
+        }
+
+        return new LoginResponse(null, null, false);
     }
 
     // RESET PASSWORD

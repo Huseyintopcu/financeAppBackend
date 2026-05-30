@@ -1,4 +1,5 @@
 package com.example.financeapp.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -6,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginResponse
+public class CategoryExpenseResponse
 {
-    private String accessToken;
-    private String refreshToken;
-    private boolean success;
+    private String category;
+    private double total;
+    private double previousTotal;
 }

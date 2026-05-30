@@ -23,13 +23,25 @@ public class JwtService
         key= Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String email)
+    // 15 mins access token generator
+    public String generateAccessToken(String email)
     {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60))
+                .setExpiration(new Date(System.currentTimeMillis()+1000*60*15))
                 .signWith(key,SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // 30 days refresh token genaretor
+    public String generateRefreshToken(String email)
+    {
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30)) // 30 Gün
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -52,6 +64,16 @@ public class JwtService
         }
         catch (Exception e)
         {
+            return false;
+        }
+    }
+
+    public boolean validateRefreshToken(String token)
+    {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }

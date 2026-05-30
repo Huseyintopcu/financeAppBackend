@@ -1,5 +1,6 @@
 package com.example.financeapp.controller;
 
+import com.example.financeapp.dto.CategoryExpenseResponse;
 import com.example.financeapp.dto.ExpenseRequest;
 import com.example.financeapp.dto.ExpenseResponse;
 import com.example.financeapp.entity.Expense;

@@ -40,7 +40,7 @@ public class IncomeController
         return incomeService.getALlIncome();
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void deleteIncome(@PathVariable int id)
     {
         incomeService.deleteIncome(id);
