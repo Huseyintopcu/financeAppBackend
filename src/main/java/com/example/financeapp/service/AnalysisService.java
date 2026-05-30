@@ -1,6 +1,7 @@
 package com.example.financeapp.service;
 
 import com.example.financeapp.dto.CategoryExpenseResponse;
+import com.example.financeapp.entity.Expense;
 import com.example.financeapp.repository.AnalysisRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -8,10 +9,8 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.temporal.WeekFields;
+import java.util.*;
 
 @Service
 public class AnalysisService
@@ -33,8 +32,8 @@ public class AnalysisService
         LocalDate lastWeekStart = thisWeekStart.minusDays(7);
         LocalDate lastWeekEnd = thisWeekEnd.minusDays(7);
 
-        List<Object[]> thisWeekRows = analysisRepository.getCategoryTotals(email,thisWeekStart,thisWeekEnd);
-        List<Object[]> lastWeekRows = analysisRepository.getCategoryTotals(email, lastWeekStart, lastWeekEnd);
+        List<Object[]> thisWeekRows = analysisRepository.getCategoryTotalsWithDays(email,thisWeekStart,thisWeekEnd);
+        List<Object[]> lastWeekRows = analysisRepository.getCategoryTotalsWithDays(email, lastWeekStart, lastWeekEnd);
 
         Map<String, Double> lastWeekMap = new HashMap<>();
         for (Object[] row : lastWeekRows)
@@ -42,15 +41,30 @@ public class AnalysisService
             lastWeekMap.put(row[0].toString(), ((Number) row[1]).doubleValue());
         }
 
-        List<CategoryExpenseResponse> result = new ArrayList<>();
+        Map<String, Double> currentTotals = new HashMap<>();
+        Map<String, Map<Integer, Double>> breakdowns = new HashMap<>();
+
 
         for (Object[] row : thisWeekRows)
         {
             String category = row[0].toString();
-            Double currentTotal = ((Number) row[1]).doubleValue();
-            Double previousTotal = lastWeekMap.getOrDefault(category,0.0);
+            Double amount = ((Number) row[1]).doubleValue();
+            Integer dayOfWeek = ((Number) row[2]).intValue();
 
-            result.add(new CategoryExpenseResponse(category, currentTotal,previousTotal));
+            currentTotals.put(category,currentTotals.getOrDefault(category,0.0) + amount);
+
+            breakdowns.putIfAbsent(category, new HashMap<>());
+            breakdowns.get(category).put(dayOfWeek,amount);
+        }
+
+        List<CategoryExpenseResponse> result = new ArrayList<>();
+        for (String category : currentTotals.keySet())
+        {
+            double total = currentTotals.get(category);
+            double previousTotal = lastWeekMap.getOrDefault(category, 0.0);
+            Map<Integer, Double> dailyBreakdown = breakdowns.getOrDefault(category, new HashMap<>());
+
+            result.add(new CategoryExpenseResponse(category,total,previousTotal,dailyBreakdown, null));
         }
 
         return  result;
@@ -68,7 +82,7 @@ public class AnalysisService
         LocalDate lastMonthStart = thisMonthStart.minusMonths(1);
         LocalDate lastMonthEnd = lastMonthStart.with(TemporalAdjusters.lastDayOfMonth());
 
-        List<Object[]> thisMontRows = analysisRepository.getCategoryTotals(email, thisMonthStart,thisMonthEnd);
+        List<Expense> thisMontRows = analysisRepository.findAllByUserEmailAndTransactionDateBetween(email, thisMonthStart, thisMonthEnd);
         List<Object[]> lastMontRows = analysisRepository.getCategoryTotals(email, lastMonthStart, lastMonthEnd);
 
         Map<String, Double> lastMonthMap = new HashMap<>();
@@ -77,15 +91,32 @@ public class AnalysisService
             lastMonthMap.put(row[0].toString(), ((Number) row[1]).doubleValue());
         }
 
+        Map<String, Double> currentTotals = new HashMap<>();
+        Map<String,Map<Integer,Double>> weeklyBreakdowns = new HashMap<>();
+
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        for (Expense e : thisMontRows)
+        {
+            String category = e.getCategory().name();
+            Double amount = e.getAmount();
+
+            int weekOfMonth  = e.getTransactionDate().get(weekFields.weekOfMonth());
+
+            currentTotals.put(category,currentTotals.getOrDefault(category, 0.0 ) + amount);
+
+            weeklyBreakdowns.putIfAbsent(category, new HashMap<>());
+            weeklyBreakdowns.get(category).put(weekOfMonth,weeklyBreakdowns.get(category).getOrDefault(category, 0.0) + amount);
+        }
+
         List<CategoryExpenseResponse> result = new ArrayList<>();
 
-        for (Object[] row : thisMontRows)
+        for (String category : currentTotals.keySet())
         {
-            String category = row[0].toString();
-            Double currentTotal = ((Number) row[1]).doubleValue();
-            Double previousTotal = lastMonthMap.getOrDefault(category,0.0);
+           Double total = currentTotals.get(category);
+           Double previousTotal = lastMonthMap.getOrDefault(category, 0.0);
+           Map<Integer, Double> weeklyBreakdown = weeklyBreakdowns.getOrDefault(category, new HashMap<>());
 
-            result.add(new CategoryExpenseResponse(category, currentTotal,previousTotal));
+           result.add(new CategoryExpenseResponse(category, total,previousTotal,null,weeklyBreakdown));
         }
 
         return  result;
@@ -105,7 +136,7 @@ public class AnalysisService
 
         for (Object[] row : rows)
         {
-            result.add(new CategoryExpenseResponse(row[0].toString(),((Number) row[1]).doubleValue(), 0));
+            result.add(new CategoryExpenseResponse(row[0].toString(),((Number) row[1]).doubleValue(), 0,null,null));
         }
 
         return  result;
