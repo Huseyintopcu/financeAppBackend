@@ -21,7 +21,7 @@ public interface IncomeRepository extends JpaRepository<Income, Long>
 
     List<Income> findByUserEmailAndTransactionDate(String userEmail, LocalDate transactionDate);
 
-    List<Income> findByUserEmailAndTransactionDateBetween(String userEmail,LocalDate start, LocalDate end);
+    List<Income> findByUserEmailAndTransactionDateBetweenOrderByTransactionDateDesc(String userEmail,LocalDate start, LocalDate end);
 
 
     @Override

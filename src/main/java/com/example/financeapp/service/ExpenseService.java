@@ -1,28 +1,21 @@
 package com.example.financeapp.service;
 
-import com.example.financeapp.dto.CategoryExpenseResponse;
 import com.example.financeapp.dto.ExpenseRequest;
 import com.example.financeapp.dto.ExpenseResponse;
 import com.example.financeapp.entity.Expense;
 import com.example.financeapp.repository.ExpenseRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ExpenseService
 {
     private final ExpenseRepository expenseRepository;
-
-    public ExpenseService(ExpenseRepository expenseRepository)
-    {
-        this.expenseRepository = expenseRepository;
-    }
 
     // Add new expense
     public ExpenseResponse addExpense(ExpenseRequest request)
@@ -62,7 +55,7 @@ public class ExpenseService
         LocalDate start = now.withDayOfMonth(1);
         LocalDate end = now.withDayOfMonth(now.lengthOfMonth());
 
-        return expenseRepository.findByUserEmailAndTransactionDateBetween(email,start,end);
+        return expenseRepository.findByUserEmailAndTransactionDateBetweenOrderByTransactionDateDesc(email,start,end);
     }
 
     // Delete chosen expense

@@ -2,7 +2,8 @@ package com.example.financeapp.controller;
 
 import com.example.financeapp.dto.*;
 import com.example.financeapp.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -12,53 +13,83 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
     private final AuthService authService;
 
-    public AuthController(AuthService authService)
-    {
-        this.authService = authService;
-    }
-
     @PostMapping("/register")
-    public RegisterResponse register(@RequestBody RegisterRequest request)
+    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request)
     {
-        return authService.register(request);
+        RegisterResponse response =authService.register(request);
+        if (response.isSuccess())
+        {
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request)
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request)
     {
-        return authService.login(request);
+        LoginResponse response = authService.login(request);
+        if (response.isSuccess())
+        {
+            return  ResponseEntity.ok(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @PostMapping("/send-otp")
-    public String sendOtp(@RequestBody Map<String, String> request)
+    public String sendOtp(@Valid @RequestBody Map<String, String> request)
     {
         return authService.sendOtp(request.get("email")).toString();
     }
 
     @PostMapping("/verify-otp")
-    public VerifyOtpResponse verifyOtp(@RequestBody VerifyOtpRequest request)
+    public ResponseEntity<VerifyOtpResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest request)
     {
-        return authService.verifyOtp(request);
+        VerifyOtpResponse response = authService.verifyOtp(request);
+        if (response.isSuccess())
+        {
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @PostMapping("/reset-password")
-    public ResetPasswordResponse resetPassword(@RequestBody ResetPasswordRequest request)
+    public ResponseEntity<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request)
     {
-        return authService.resetPassword(request);
+        ResetPasswordResponse response = authService.resetPassword(request);
+        if (response.isSuccess())
+        {
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<LoginResponse> refresh(@RequestBody RefreshRequest request)
+    public ResponseEntity<LoginResponse> refresh(@Valid @RequestBody RefreshRequest request)
     {
         LoginResponse response = authService.refresh(request);
         if (response.isSuccess()) {
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @PostMapping("/update-fcm-token")
+    public ResponseEntity<String> updateFcmToken(@Valid @RequestBody FcmTokenRequest request)
+    {
+        boolean isUpdated = authService.updateFcmToken(request);
+        if (isUpdated)
+        {
+            return ResponseEntity.ok("Cihaz token'ı başarıyla güncellendi.");
+        }
+        else
+        {
+            return ResponseEntity.badRequest().body("Kullanıcı bulunamadı.");
+        }
     }
 }

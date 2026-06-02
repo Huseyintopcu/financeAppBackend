@@ -5,6 +5,7 @@ import com.example.financeapp.entity.Expense;
 import com.example.financeapp.entity.Income;
 import com.example.financeapp.repository.ExpenseRepository;
 import com.example.financeapp.repository.IncomeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,15 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TransactionService
 {
     private final IncomeRepository incomeRepository;
     private final ExpenseRepository expenseRepository;
-
-    public TransactionService(IncomeRepository incomeRepository, ExpenseRepository expenseRepository) {
-        this.incomeRepository = incomeRepository;
-        this.expenseRepository = expenseRepository;
-    }
 
     public List<TransactionResponse> getTodayTransactions(String email)
     {

@@ -1,15 +1,14 @@
 package com.example.financeapp.entity;
 
-import com.example.financeapp.enums.ExpenseCategory;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Entity
-@Table(name= "expenses")
+@Table(name = "bill")
 @Data
-public class Expense
+public class Bill
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,17 +18,12 @@ public class Expense
     private String title;
 
     @Column(nullable = false)
-    private int quantity;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ExpenseCategory category;
-
-    @Column(nullable = false)
     private Double amount;
 
     @Column(nullable = false)
-    private LocalDate transactionDate;
+    private LocalDate finalPaymentDate;
+
+    private boolean isPaid = false;
 
     @Column(unique = true,nullable = false)
     private String userEmail;

@@ -5,6 +5,7 @@ import com.example.financeapp.dto.IncomeResponse;
 import com.example.financeapp.entity.Income;
 import com.example.financeapp.repository.IncomeRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +13,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class IncomeService
 {
     private final IncomeRepository incomeRepository;
-
-    public IncomeService(IncomeRepository incomeRepository)
-    {
-        this.incomeRepository = incomeRepository;
-    }
 
     @Transactional
     public IncomeResponse addIncome(IncomeRequest request)
@@ -54,7 +51,7 @@ public class IncomeService
         LocalDate start = now.withDayOfMonth(1);
         LocalDate end = now.withDayOfMonth(now.lengthOfMonth());
 
-        return incomeRepository.findByUserEmailAndTransactionDateBetween(email,start,end);
+        return incomeRepository.findByUserEmailAndTransactionDateBetweenOrderByTransactionDateDesc(email,start,end);
     }
 
     public void deleteIncome(long id)

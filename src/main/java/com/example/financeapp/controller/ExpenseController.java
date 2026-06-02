@@ -1,25 +1,20 @@
 package com.example.financeapp.controller;
 
-import com.example.financeapp.dto.CategoryExpenseResponse;
 import com.example.financeapp.dto.ExpenseRequest;
 import com.example.financeapp.dto.ExpenseResponse;
 import com.example.financeapp.entity.Expense;
-import com.example.financeapp.repository.ExpenseRepository;
 import com.example.financeapp.service.ExpenseService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/expense")
+@RequiredArgsConstructor
 public class ExpenseController
 {
     private final ExpenseService expenseService;
-
-    public ExpenseController(ExpenseService expenseService)
-    {
-        this.expenseService = expenseService;
-    }
 
     @PostMapping("/add")
     public ExpenseResponse addExpense (@RequestBody ExpenseRequest request)

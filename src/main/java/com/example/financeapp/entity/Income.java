@@ -12,13 +12,17 @@ public class Income
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
+    @Column(nullable = false)
     private String title;
 
-    private double amount;
+    @Column(nullable = false)
+    private Double amount;
 
+    @Column(nullable = false)
     private LocalDate transactionDate;
 
+    @Column(unique = true,nullable = false)
     private String userEmail;
 }

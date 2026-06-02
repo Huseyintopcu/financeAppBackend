@@ -2,6 +2,8 @@ package com.example.financeapp.controller;
 
 import com.example.financeapp.dto.CategoryExpenseResponse;
 import com.example.financeapp.service.AnalysisService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,30 +12,41 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/analysis")
+@RequiredArgsConstructor
 public class AnalysisController
 {
-    private AnalysisService analysisService;
-
-    public AnalysisController(AnalysisService analysisService)
-    {
-        this.analysisService = analysisService;
-    }
+    private final AnalysisService analysisService;
 
     @GetMapping("/weekly")
-    public List<CategoryExpenseResponse> weekly()
+    public ResponseEntity<List<CategoryExpenseResponse>> weekly()
     {
-        return analysisService.getWeeklyAnalysis();
+        List<CategoryExpenseResponse> analysisList = analysisService.getWeeklyAnalysis();
+        if (analysisList == null || analysisList.isEmpty())
+        {
+            throw new RuntimeException("Bu haftaya ait herhangi bir harcama analizi oluşturulamadı.");
+        }
+        return ResponseEntity.ok(analysisList);
     }
 
     @GetMapping("/monthly")
-    public List<CategoryExpenseResponse> monthly()
+    public ResponseEntity<List<CategoryExpenseResponse>> monthly()
     {
-        return analysisService.getMonthlyAnalysis();
+        List<CategoryExpenseResponse> analysisList = analysisService.getMonthlyAnalysis();
+        if (analysisList == null || analysisList.isEmpty())
+        {
+            throw new RuntimeException("Bu aya ait herhangi bir harcama analizi oluşturulamadı.");
+        }
+        return ResponseEntity.ok(analysisList);
     }
 
     @GetMapping("/all")
-    public List<CategoryExpenseResponse> all()
+    public ResponseEntity<List<CategoryExpenseResponse>>  all()
     {
-        return analysisService.getAllAnalysis();
+        List<CategoryExpenseResponse> analysisList = analysisService.getAllAnalysis();
+        if (analysisList == null || analysisList.isEmpty())
+        {
+            throw new RuntimeException("Henüz bir harcama analizi oluşturulamadı.");
+        }
+        return ResponseEntity.ok(analysisList);
     }
 }

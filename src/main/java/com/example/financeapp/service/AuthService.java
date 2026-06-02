@@ -6,6 +6,8 @@ import com.example.financeapp.entity.User;
 import com.example.financeapp.repository.OtpRepository;
 import com.example.financeapp.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -20,22 +23,6 @@ public class AuthService {
     private final EmailService emailService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-
-
-    public AuthService(
-            UserRepository userRepository,
-            OtpRepository otpRepository,
-            EmailService emailService,
-            JwtService jwtService,
-            PasswordEncoder passwordEncoder
-            )
-    {
-        this.userRepository = userRepository;
-        this.otpRepository = otpRepository;
-        this.emailService = emailService;
-        this.jwtService = jwtService;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     // REGISTER
     public RegisterResponse register(RegisterRequest request) {
@@ -105,14 +92,14 @@ public class AuthService {
         Optional<User> userOpt = userRepository.findByEmail(request.getEmail());
 
         if (userOpt.isEmpty()) {
-            return new LoginResponse(null, null,false);
+            throw new org.springframework.security.authentication.BadCredentialsException("E-posta veya şifre hatalı");
         }
 
         User user = userOpt.get();
 
         if (!passwordEncoder.matches(request.getPassword(),user.getPassword()))
         {
-            return new LoginResponse(null, null,false);
+            throw new org.springframework.security.authentication.BadCredentialsException("E-posta veya şifre hatalı");
         }
 
         String accessToken = jwtService.generateAccessToken(user.getEmail());
@@ -121,6 +108,21 @@ public class AuthService {
         return new LoginResponse(accessToken, refreshToken,true);
     }
 
+    // Save FCM token to data table
+    public boolean  updateFcmToken(FcmTokenRequest request)
+    {
+        var userOptinal = userRepository.findByEmail(request.getEmail());
+
+        if (userOptinal.isPresent()) {
+            var user = userOptinal.get();
+            user.setFcmToken(request.getToken());
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    // Access token refresh
     public LoginResponse refresh(RefreshRequest request)
     {
 

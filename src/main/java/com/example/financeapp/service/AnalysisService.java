@@ -3,6 +3,7 @@ package com.example.financeapp.service;
 import com.example.financeapp.dto.CategoryExpenseResponse;
 import com.example.financeapp.entity.Expense;
 import com.example.financeapp.repository.AnalysisRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +14,11 @@ import java.time.temporal.WeekFields;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class AnalysisService
 {
     private final AnalysisRepository analysisRepository;
 
-    public  AnalysisService(AnalysisRepository analysisRepository)
-    {
-        this.analysisRepository = analysisRepository;
-    }
     // Get a expense list which give back category and total for this week and the last week
     public List<CategoryExpenseResponse> getWeeklyAnalysis()
     {
