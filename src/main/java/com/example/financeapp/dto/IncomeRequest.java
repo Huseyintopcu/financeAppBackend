@@ -1,6 +1,7 @@
 package com.example.financeapp.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
@@ -12,10 +13,10 @@ public class IncomeRequest
     @NotBlank(message = "Gelir başlığı boş bırakılamaz")
     private String title;
 
-    @NotBlank(message = "Gelir miktarı boş bırakılamaz")
+    @NotNull(message = "Gelir miktarı boş bırakılamaz")
     @Positive(message = "Gelir miktarı sıfırdan büyük olmalıdır")
     private double amount;
 
-    @NotBlank(message = "Gelir tarihi boş bırakılamaz")
+    @NotNull(message = "Gelir tarihi boş bırakılamaz")
     private LocalDate transactionDate;
 }
