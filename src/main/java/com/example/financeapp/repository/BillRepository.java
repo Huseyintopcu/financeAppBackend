@@ -1,6 +1,7 @@
 package com.example.financeapp.repository;
 
 import com.example.financeapp.entity.Bill;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -26,4 +27,7 @@ public interface BillRepository extends JpaRepository<Bill, Long>
     List<Bill> findByIsPaidFalseAndFinalPaymentDateBetween(LocalDate today, LocalDate maxTargetDate);
 
     List<Bill> findByUserEmailAndIsPaidFalseAndFinalPaymentDateBetweenOrderByFinalPaymentDateAsc(String userEmail, LocalDate start, LocalDate end);
+
+    @Transactional
+    void deleteByUserEmail(String email);
 }

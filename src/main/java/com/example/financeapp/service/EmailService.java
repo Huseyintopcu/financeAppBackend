@@ -9,15 +9,26 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmailService
 {
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     public void sendOtp(String email,String code)
     {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("OTP Kodu");
-        message.setText("Kodunuz: "+ code);
+        try
+        {
 
-        mailSender.send(message);
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setSubject("OTP Kodu");
+            message.setText("Kodunuz: " + code);
+
+            mailSender.send(message);
+
+            System.out.println("MAIL GONDERILDI");
+        }
+        catch (Exception e)
+        {
+            System.out.println("MAIL ERROR");
+            e.printStackTrace();
+        }
     }
 }

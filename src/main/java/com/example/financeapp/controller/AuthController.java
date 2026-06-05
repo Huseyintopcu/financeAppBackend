@@ -92,4 +92,15 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Kullanıcı bulunamadı.");
         }
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAccount(@RequestBody String email)
+    {
+
+        System.out.println("CONTROLLER DELETE HIT " + email);
+
+        authService.deleteAccount(email);
+
+        return ResponseEntity.ok("hesap silindi");
+    }
 }

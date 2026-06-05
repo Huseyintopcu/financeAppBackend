@@ -3,8 +3,7 @@ package com.example.financeapp.service;
 import com.example.financeapp.dto.*;
 import com.example.financeapp.entity.Otp;
 import com.example.financeapp.entity.User;
-import com.example.financeapp.repository.OtpRepository;
-import com.example.financeapp.repository.UserRepository;
+import com.example.financeapp.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,9 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final OtpRepository otpRepository;
+    private final ExpenseRepository expenseRepository;
+    private final IncomeRepository incomeRepository;
+    private final BillRepository billRepository;
     private final EmailService emailService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
@@ -48,8 +50,11 @@ public class AuthService {
         return String.valueOf((int)(Math.random() * 900000) + 100000);
     }
 
+    @Transactional
     public  String sendOtp(String email)
     {
+        otpRepository.deleteByEmail(email);
+
         String code = generateCode();
 
         Otp otp = new Otp();
@@ -160,4 +165,15 @@ public class AuthService {
         return new ResetPasswordResponse(true,"Şifre Güncellendi");
     }
 
+    // Delete account
+    @Transactional
+    public void deleteAccount(String email)
+    {
+        System.out.println("DELETING USER: " + email);
+        expenseRepository.deleteByUserEmail(email);
+        incomeRepository.deleteByUserEmail(email);
+        billRepository.deleteByUserEmail(email);
+
+        userRepository.deleteByEmail(email);
+    }
 }

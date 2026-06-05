@@ -23,6 +23,6 @@ public class Income
     @Column(nullable = false)
     private LocalDate transactionDate;
 
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     private String userEmail;
 }

@@ -1,6 +1,7 @@
 package com.example.financeapp.repository;
 
 import com.example.financeapp.entity.Income;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -26,4 +27,7 @@ public interface IncomeRepository extends JpaRepository<Income, Long>
 
     @Override
     Optional<Income> findById(Long id);
+
+    @Transactional
+    void deleteByUserEmail(String email);
 }
