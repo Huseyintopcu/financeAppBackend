@@ -103,4 +103,9 @@ public class AuthController {
 
         return ResponseEntity.ok("hesap silindi");
     }
+
+    @GetMapping("/ping")
+    public ResponseEntity<String> pingServer() {
+        return ResponseEntity.ok("Uygulama uyanık ve çalışıyor! 🚀");
+    }
 }
