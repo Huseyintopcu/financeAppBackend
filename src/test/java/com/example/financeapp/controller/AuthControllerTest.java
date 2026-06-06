@@ -196,4 +196,15 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("hesap silindi"));
     }
+
+
+    @Test
+    void pingServer_tetiklendiginde_200_ok_ve_mesaj_donmeli() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/auth/ping")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Uygulama uyanık ve çalışıyor! 🚀"));
+    }
+
+
 }
