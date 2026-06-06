@@ -19,6 +19,7 @@ public class AiService {
     @Value("${gemini.api.key}")
     private String apiKey;
 
+    private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
     public AiIBillResponse analyzeBillWithAi(MultipartFile file)
@@ -65,7 +66,6 @@ public class AiService {
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("contents", Collections.singletonList(content));
 
-            RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 

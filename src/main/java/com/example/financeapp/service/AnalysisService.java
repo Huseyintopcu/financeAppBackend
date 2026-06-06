@@ -103,7 +103,7 @@ public class AnalysisService
             currentTotals.put(category,currentTotals.getOrDefault(category, 0.0 ) + amount);
 
             weeklyBreakdowns.putIfAbsent(category, new HashMap<>());
-            weeklyBreakdowns.get(category).put(weekOfMonth,weeklyBreakdowns.get(category).getOrDefault(category, 0.0) + amount);
+            weeklyBreakdowns.get(category).put(weekOfMonth,weeklyBreakdowns.get(category).getOrDefault(weekOfMonth, 0.0) + amount);
         }
 
         List<CategoryExpenseResponse> result = new ArrayList<>();

@@ -25,6 +25,6 @@ public class Bill
 
     private boolean isPaid = false;
 
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     private String userEmail;
 }

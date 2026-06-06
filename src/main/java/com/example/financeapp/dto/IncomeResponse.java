@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class IncomeResponse
 {
-    private boolean succsess;
+    private boolean success;
     private String message;
 }
