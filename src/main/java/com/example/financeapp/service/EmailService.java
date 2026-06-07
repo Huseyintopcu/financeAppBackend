@@ -1,32 +1,49 @@
 package com.example.financeapp.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class EmailService
 {
-    private final JavaMailSender mailSender;
+    @Value("${resend.api.key}")
+    private String apiKey;
 
-    public void sendOtp(String email,String code)
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    public void sendOtp(String email, String code)
     {
+        String url = "https://resend.com";
+
         try
         {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(apiKey);
 
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(email);
-            message.setSubject("OTP Kodu");
-            message.setText("Kodunuz: " + code);
 
-            mailSender.send(message);
+            Map<String, Object> body = new HashMap<>();
+            body.put("from", "onboarding@resend.dev");
+            body.put("to", email);
+            body.put("subject", "OTP Kodu");
+            body.put("html", "<strong>Kodunuz: " + code + "</strong>");
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+
+            restTemplate.postForEntity(url, request, String.class);
 
             System.out.println("MAIL GONDERILDI");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("MAIL ERROR");
             e.printStackTrace();
         }
