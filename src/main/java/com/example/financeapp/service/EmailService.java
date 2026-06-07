@@ -24,7 +24,7 @@ public class EmailService
 
     public void sendOtp(String email, String code)
     {
-        String url = "https://resend.com";
+        String url = "https://api.resend.com/emails";
 
         this.restTemplate = new RestTemplate();
 
