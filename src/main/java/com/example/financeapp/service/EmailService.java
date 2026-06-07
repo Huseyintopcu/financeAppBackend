@@ -32,7 +32,7 @@ public class EmailService
 
 
             Map<String, Object> body = new HashMap<>();
-            body.put("from", "onboarding@resend.dev");
+            body.put("from", "otp@moneta-app.cloud-ip.cc");
             body.put("to", email);
             body.put("subject", "OTP Kodu");
             body.put("html", "<strong>Kodunuz: " + code + "</strong>");
