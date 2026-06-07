@@ -15,7 +15,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EmailService
 {
-    @Value("${resend.api.key}")
+    @Value("${RESEND_API_KEY}")
     private String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
